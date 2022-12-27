@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "airdrop-merkle-tree-near-rs"
+name = "airdrop_merkle_tree_near_rs"
 version = "0.1.0"
 dependencies = [
  "near-sdk",
