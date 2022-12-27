@@ -4,7 +4,6 @@ use hash_fn::{MerkleTreeHashFn, DEFAULT_HASH_FN};
 use hash_pair::sort_hash_pair;
 use near_sdk::borsh::BorshSerialize;
 use proof::MerkleTreeProof;
-use root::verify;
 
 pub mod data;
 pub mod hash;
@@ -14,9 +13,9 @@ pub mod proof;
 pub mod root;
 
 pub struct MerkleTree {
-    root_hash: MerkleTreeHash,
-    nodes: Vec<MerkleTreeHash>,
-    st_sum: usize,
+    pub root_hash: MerkleTreeHash,
+    pub nodes: Vec<MerkleTreeHash>,
+    pub st_sum: usize,
 }
 
 impl MerkleTree {
@@ -83,6 +82,8 @@ impl MerkleTree {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use root::verify;
 
     #[test]
     pub fn correct_number_of_nodes() {
