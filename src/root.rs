@@ -5,7 +5,7 @@ use crate::hash_pair::sort_hash_pair;
 use crate::proof::MerkleTreeProof;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize, Clone, Copy)]
 pub struct MerkleTreeRoot {
     pub hash: MerkleTreeHash,
     pub hash_fn: MerkleTreeHashFn,
