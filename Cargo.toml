@@ -8,7 +8,7 @@ license = "MIT"
 license-file = "LICENSE"
 readme = "README.md"
 repository = "https://github.com/sodamnfoolish/airdrop-merkle-tree-near-rs"
-keywords = ["airdrop", "mekle tree", "near"]
+keywords = ["airdrop", "merkle", "tree", "near"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
