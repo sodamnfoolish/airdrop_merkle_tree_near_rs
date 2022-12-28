@@ -1,4 +1,4 @@
-use crate::MerkleTreeHash;
+use crate::hash::MerkleTreeHash;
 
 pub fn sort_hash_pair(
     first: &MerkleTreeHash,
