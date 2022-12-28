@@ -1,6 +1,6 @@
 [package]
 name = "airdrop-merkle-tree-near-rs"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["sodamnfoolish <sodamnfoolish@outlook.com>"]
 description = "merkle tree for airdrop contract on NEAR"
