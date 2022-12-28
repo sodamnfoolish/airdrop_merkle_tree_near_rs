@@ -1,9 +1,9 @@
 use data::MerkleTreeData;
-use hash::MerkleTreeHash;
 use hash_fn::{MerkleTreeHashFn, DEFAULT_HASH_FN};
 use hash_pair::sort_hash_pair;
 use near_sdk::borsh::BorshSerialize;
 use proof::MerkleTreeProof;
+use root::MerkleTreeRoot;
 
 pub mod data;
 pub mod hash;
@@ -13,13 +13,14 @@ pub mod proof;
 pub mod root;
 
 pub struct MerkleTree {
-    pub root_hash: MerkleTreeHash,
-    pub nodes: Vec<MerkleTreeHash>,
-    pub st_sum: usize,
+    pub root: MerkleTreeRoot,
+    pub proofs: Vec<MerkleTreeProof>,
 }
 
 impl MerkleTree {
-    pub fn create(items: &Vec<MerkleTreeData>, hash_fn: Option<MerkleTreeHashFn>) -> Self {
+    pub fn build(items: &Vec<MerkleTreeData>, hash_fn: Option<MerkleTreeHashFn>) -> Self {
+        let items_len = items.len();
+
         let mut items = items.clone();
 
         let hash_fn = hash_fn.unwrap_or_else(|| DEFAULT_HASH_FN);
@@ -55,27 +56,32 @@ impl MerkleTree {
             );
         }
 
+        let get_proof = |index: usize| -> MerkleTreeProof {
+            let mut result = MerkleTreeProof::new();
+
+            let mut v = index + st_sum;
+
+            while v > 0 {
+                let w = if v % 2 == 0 { v - 1 } else { v + 1 };
+
+                result.push(nodes[w]);
+
+                v = (v - 1) >> 1;
+            }
+
+            result
+        };
+
+        let mut proofs: Vec<MerkleTreeProof> = Vec::new();
+
+        for i in 0..items_len {
+            proofs.push(get_proof(i))
+        }
+
         MerkleTree {
-            root_hash: nodes[0],
-            nodes,
-            st_sum,
+            root: MerkleTreeRoot::new(nodes[0], Some(hash_fn)),
+            proofs,
         }
-    }
-
-    pub fn get_proof(&self, index: usize) -> MerkleTreeProof {
-        let mut result = MerkleTreeProof::new();
-
-        let mut v = index + self.st_sum;
-
-        while v > 0 {
-            let w = if v % 2 == 0 { v - 1 } else { v + 1 };
-
-            result.push(self.nodes[w]);
-
-            v = (v - 1) >> 1;
-        }
-
-        result
     }
 }
 
@@ -83,19 +89,21 @@ impl MerkleTree {
 mod tests {
     use super::*;
 
-    use root::verify;
-
     #[test]
-    pub fn correct_number_of_nodes() {
+    pub fn correct_proofs() {
         let mut items = Vec::<MerkleTreeData>::new();
 
         for i in 0..8 {
             items.push(i.try_to_vec().unwrap());
         }
 
-        let merkle_tree = MerkleTree::create(&items, None);
+        let merkle_tree = MerkleTree::build(&items, None);
 
-        assert_eq!(merkle_tree.nodes.len(), 15);
+        assert_eq!(merkle_tree.proofs.len(), 8);
+
+        for proof in merkle_tree.proofs {
+            assert_eq!(proof.len(), 3);
+        }
     }
 
     #[test]
@@ -106,15 +114,10 @@ mod tests {
             items.push(i.try_to_vec().unwrap());
         }
 
-        let merkle_tree = MerkleTree::create(&items, None);
+        let merkle_tree = MerkleTree::build(&items, None);
 
         for i in 0..items.len() {
-            assert!(verify(
-                &merkle_tree.root_hash,
-                &items[i],
-                &merkle_tree.get_proof(i),
-                None
-            ));
+            assert!(merkle_tree.root.verify(&items[i], &merkle_tree.proofs[i]));
         }
     }
 
@@ -126,14 +129,9 @@ mod tests {
             items.push(i.try_to_vec().unwrap());
         }
 
-        let merkle_tree = MerkleTree::create(&items, None);
+        let merkle_tree = MerkleTree::build(&items, None);
 
-        assert!(!verify(
-            &merkle_tree.root_hash,
-            &items[0],
-            &merkle_tree.get_proof(1),
-            None
-        ));
+        assert!(!merkle_tree.root.verify(&items[0], &merkle_tree.proofs[1]));
     }
 
     // #[test]

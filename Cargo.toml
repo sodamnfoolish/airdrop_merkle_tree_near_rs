@@ -1,11 +1,14 @@
 [package]
 name = "airdrop-merkle-tree-near-rs"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["sodamnfoolish <sodamnfoolish@outlook.com>"]
 description = "merkle tree for airdrop contract on NEAR"
 license = "MIT"
 license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/sodamnfoolish/airdrop-merkle-tree-near-rs"
+keywords = ["airdrop", "mekle tree", "near"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
