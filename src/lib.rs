@@ -4,6 +4,7 @@ use hash_fn::{MerkleTreeHashFn, DEFAULT_HASH_FN};
 use hash_pair::sort_hash_pair;
 use near_sdk::borsh::BorshSerialize;
 use proof::MerkleTreeProof;
+use root::MerkleTreeRoot;
 
 pub mod data;
 pub mod hash;
@@ -13,7 +14,7 @@ pub mod proof;
 pub mod root;
 
 pub struct MerkleTree {
-    pub root_hash: MerkleTreeHash,
+    pub root: MerkleTreeRoot,
     pub nodes: Vec<MerkleTreeHash>,
     pub st_sum: usize,
 }
@@ -56,7 +57,7 @@ impl MerkleTree {
         }
 
         MerkleTree {
-            root_hash: nodes[0],
+            root: MerkleTreeRoot::new(nodes[0], Some(hash_fn)),
             nodes,
             st_sum,
         }
@@ -83,8 +84,6 @@ impl MerkleTree {
 mod tests {
     use super::*;
 
-    use root::verify;
-
     #[test]
     pub fn correct_number_of_nodes() {
         let mut items = Vec::<MerkleTreeData>::new();
@@ -109,12 +108,9 @@ mod tests {
         let merkle_tree = MerkleTree::create(&items, None);
 
         for i in 0..items.len() {
-            assert!(verify(
-                &merkle_tree.root_hash,
-                &items[i],
-                &merkle_tree.get_proof(i),
-                None
-            ));
+            assert!(merkle_tree
+                .root
+                .verify(&items[i], &merkle_tree.get_proof(i)));
         }
     }
 
@@ -128,12 +124,9 @@ mod tests {
 
         let merkle_tree = MerkleTree::create(&items, None);
 
-        assert!(!verify(
-            &merkle_tree.root_hash,
-            &items[0],
-            &merkle_tree.get_proof(1),
-            None
-        ));
+        assert!(!merkle_tree
+            .root
+            .verify(&items[0], &merkle_tree.get_proof(1)));
     }
 
     // #[test]
