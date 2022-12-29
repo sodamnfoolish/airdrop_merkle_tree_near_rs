@@ -2,9 +2,10 @@ use crate::data::MerkleTreeData;
 use crate::hash::MerkleTreeHash;
 use crate::hash_pair::sort_hash_pair;
 use crate::proof::MerkleTreeProof;
-use near_sdk::borsh::BorshSerialize;
+use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::env::keccak256_array;
 
+#[derive(BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct MerkleTreeRoot {
     pub hash: MerkleTreeHash,
 }
