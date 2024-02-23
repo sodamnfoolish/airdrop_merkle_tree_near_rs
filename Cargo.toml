@@ -13,4 +13,4 @@ keywords = ["airdrop", "merkle", "tree", "near"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-near-sdk = "4.1.1"
+near-sdk = "5.0.0"
